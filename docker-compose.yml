@@ -1,0 +1,110 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: privacyos-postgres
+    environment:
+      POSTGRES_DB: privacyos
+      POSTGRES_USER: privacyos
+      POSTGRES_PASSWORD: privacyos_secret
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U privacyos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: privacyos-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/privacyos_neo4j
+    ports: ["7474:7474","7687:7687"]
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL","wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: privacyos-redis
+    command: redis-server --requirepass privacyos_redis
+    ports: ["6379:6379"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD","redis-cli","-a","privacyos_redis","ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: privacyos-es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports: ["9200:9200"]
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: privacyos-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/privacyos
+      SPRING_DATASOURCE_USERNAME: privacyos
+      SPRING_DATASOURCE_PASSWORD: privacyos_secret
+      SPRING_NEO4J_URI: bolt://neo4j:7687
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: privacyos_neo4j
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: "6379"
+      SPRING_REDIS_PASSWORD: privacyos_redis
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      JWT_SECRET: privacyos-super-secret-jwt-key-change-in-production-32chars
+      JWT_EXPIRATION: "86400000"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-demo}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-demo}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-demo}
+      HIBP_API_KEY: ${HIBP_API_KEY:-demo}
+      SPRING_PROFILES_ACTIVE: docker
+    ports: ["8080:8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: privacyos-frontend
+    ports: ["3000:80"]
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  redis_data:
+  es_data:

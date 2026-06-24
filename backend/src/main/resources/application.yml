@@ -1,0 +1,79 @@
+spring:
+  application:
+    name: privacyos-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/privacyos}
+    username: ${SPRING_DATASOURCE_USERNAME:privacyos}
+    password: ${SPRING_DATASOURCE_PASSWORD:privacyos_secret}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  neo4j:
+    uri: ${SPRING_NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME:neo4j}
+      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD:privacyos_neo4j}
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:privacyos_redis}
+      timeout: 2000ms
+  elasticsearch:
+    uris: ${SPRING_ELASTICSEARCH_URIS:http://localhost:9200}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:demo}
+            client-secret: ${GOOGLE_CLIENT_SECRET:demo}
+            scope: openid,profile,email
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:privacyos-super-secret-jwt-key-change-in-production-32chars}
+  expiration: ${JWT_EXPIRATION:86400000}
+  refresh-expiration: 604800000
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:80
+  hibp:
+    api-key: ${HIBP_API_KEY:demo}
+    base-url: https://haveibeenpwned.com/api/v3
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:demo}
+    base-url: https://api.anthropic.com/v1
+    model: claude-3-haiku-20240307
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.privacyos: DEBUG
+    org.springframework.security: WARN
