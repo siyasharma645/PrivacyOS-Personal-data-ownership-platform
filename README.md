@@ -1,161 +1,196 @@
-# PrivacyOS — Personal Data Ownership & Privacy Intelligence Platform
+# 🛡️ PrivacyOS
 
-Full-stack privacy monitoring platform with Flutter frontend and Spring Boot backend.
+### Personal Data Ownership & Privacy Intelligence Platform
 
-## Stack
-| Layer | Technology |
-|-------|-----------|
-| Mobile/Desktop/Web Frontend | Flutter 3.16 + Riverpod + GoRouter |
-| Backend API | Java 21 + Spring Boot 3.2 + Spring Security |
-| Primary Database | PostgreSQL 16 |
-| Graph Database | Neo4j 5 |
-| Cache | Redis 7 |
-| Search | Elasticsearch 8 |
-| AI | Anthropic Claude API |
-| Container | Docker + Docker Compose |
+PrivacyOS helps users understand, monitor, and control their digital footprint across the internet. Gain complete visibility into connected accounts, granted permissions, breach exposure, and privacy risks through a unified dashboard powered by intelligent analytics.
 
-## Quick Start
+---
 
-### Prerequisites
-- Docker 24+ and Docker Compose v2
-- 8 GB RAM minimum
+## ✨ Key Features
 
-### 1. Clone & configure
-```bash
-git clone <repo> && cd privacyos
-cp .env.example .env
-# Edit .env with your API keys (all optional for demo)
+### 📊 Privacy Score
+
+A real-time privacy health score ranging from **0–100** that evaluates:
+
+* Permission risk exposure
+* Data breach history
+* Third-party data sharing
+* Account sprawl
+* Data freshness
+
+Track your privacy posture over time and measure improvements instantly.
+
+---
+
+### 🔗 Connected Accounts
+
+View all linked accounts from major providers in one place:
+
+* Google
+* GitHub
+* LinkedIn
+* Other OAuth-enabled services
+
+See every granted permission, access scope, and associated risk level.
+
+---
+
+### ⚠️ Permission Analyzer
+
+Automatically identifies risky permissions and excessive access requests.
+
+Features include:
+
+* Risk classification (Low, Medium, High, Critical)
+* Scope-by-scope analysis
+* Permission explanations in plain language
+* One-click revocation recommendations
+
+---
+
+### 🚨 Breach Monitor
+
+Continuously monitors whether your information appears in known data breaches.
+
+Capabilities:
+
+* Breach detection
+* Exposure tracking
+* Remediation status monitoring
+* Historical breach timeline
+* Risk prioritization
+
+---
+
+### 🎯 Smart Recommendations Engine
+
+Receive actionable privacy improvements ranked by impact.
+
+Examples:
+
+* Revoke dangerous permissions
+* Remove unused account connections
+* Enable security protections
+* Resolve breach-related risks
+
+Every recommendation includes an estimated privacy score increase.
+
+---
+
+### 📜 Privacy Timeline
+
+Maintain a complete audit history of privacy-related activity.
+
+Track:
+
+* Account connections
+* Permission grants
+* Permission revocations
+* Breach detections
+* Privacy score changes
+
+---
+
+### 🕸️ Data Ownership Graph
+
+Interactive visualization of how your data flows across services.
+
+Explore relationships between:
+
+```text
+User
+ ├── Accounts
+ │    ├── Permissions
+ │    └── Connected Applications
+ └── Data Categories
+      ├── Profile Data
+      ├── Contacts
+      ├── Files
+      └── Activity Data
 ```
 
-### 2. Start everything
-```bash
-docker compose up -d
-```
+Understand exactly who has access to what information.
 
-### 3. Access
-| Service | URL |
-|---------|-----|
-| Flutter Web App | http://localhost:3000 |
-| Spring Boot API | http://localhost:8080 |
-| Neo4j Browser | http://localhost:7474 |
+---
 
-### 4. Demo login
-```
-Email:    demo@privacyos.io
-Password: Demo@1234
-```
+### 🤖 AI Privacy Assistant
 
-## Flutter Development
+AI-powered privacy guidance that explains:
 
-```bash
-cd frontend
-flutter pub get
+* OAuth permissions
+* Privacy risks
+* Security implications
+* Data-sharing practices
+* Personalized recommendations
 
-# Run on web (connects to backend at localhost:8080)
-flutter run -d chrome --dart-define=API_URL=http://localhost:8080
+Ask questions in plain English and receive context-aware answers based on your privacy data.
 
-# Run on Android
-flutter run -d android --dart-define=API_URL=http://10.0.2.2:8080
+---
 
-# Run on iOS
-flutter run -d ios --dart-define=API_URL=http://localhost:8080
+## 🖥️ Platform Support
 
-# Build web release
-flutter build web --release --dart-define=API_URL=http://your-api.com
-```
+Built from a single codebase and available on:
 
-## Backend Development
+* 📱 Mobile
+* 💻 Desktop
+* 🌐 Web
 
-```bash
-cd backend
+---
 
-# Start only infrastructure
-docker compose up postgres redis neo4j elasticsearch -d
+## 🏗️ Technology Stack
 
-# Run Spring Boot
-mvn spring-boot:run
-```
+### Frontend
 
-## Project Structure
+* Flutter
+* Riverpod
+* GoRouter
+* Dio
+* fl_chart
+* Custom Graph Visualization
 
-```
-privacyos/
-├── docker-compose.yml
-├── .env.example
-├── backend/                          # Spring Boot API
-│   ├── src/main/java/com/privacyos/
-│   │   ├── config/                   # Security, Redis, WebClient
-│   │   ├── controller/               # REST endpoints
-│   │   ├── dto/                      # Request/Response records
-│   │   ├── entity/                   # JPA entities
-│   │   ├── exception/                # Global error handling
-│   │   ├── repository/               # Spring Data JPA repos
-│   │   ├── security/                 # JWT filter + service
-│   │   └── service/                  # Business logic
-│   └── src/main/resources/
-│       ├── application.yml
-│       └── db/migration/             # Flyway SQL migrations
-└── frontend/                         # Flutter app
-    └── lib/
-        ├── api/                      # Dio HTTP clients
-        ├── models/                   # Data classes
-        ├── providers/                # Riverpod state
-        ├── router.dart               # GoRouter navigation
-        ├── screens/                  # 8 full screens
-        │   ├── auth/                 # Login + Register
-        │   ├── dashboard/            # Privacy overview + chart
-        │   ├── accounts/             # Connected accounts + permissions
-        │   ├── breaches/             # Breach monitor
-        │   ├── recommendations/      # Privacy action items
-        │   ├── timeline/             # Privacy event log
-        │   ├── graph/                # Interactive data graph
-        │   ├── ai/                   # AI chat assistant
-        │   └── settings/             # Profile + score breakdown
-        ├── utils/                    # Theme, formatters, extensions
-        └── widgets/                  # Shared UI components
-```
+### Backend
 
-## API Endpoints
+* Java 21
+* Spring Boot
+* Spring Security
+* JWT Authentication
+* Spring Data JPA
+* Flyway
+* Redis Cache
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/auth/register` | Register |
-| POST | `/api/v1/auth/login` | Login → JWT |
-| GET  | `/api/v1/dashboard` | Full dashboard data |
-| GET  | `/api/v1/dashboard/score` | Privacy score breakdown |
-| GET  | `/api/v1/accounts` | Connected OAuth accounts |
-| DELETE | `/api/v1/accounts/{id}` | Disconnect account |
-| POST | `/api/v1/accounts/{id}/sync` | Sync account |
-| DELETE | `/api/v1/accounts/permissions/{id}` | Revoke permission |
-| GET  | `/api/v1/breaches` | Data breaches |
-| POST | `/api/v1/breaches/check` | Run breach check |
-| GET  | `/api/v1/recommendations` | Privacy recommendations |
-| POST | `/api/v1/recommendations/{id}/complete` | Complete action |
-| GET  | `/api/v1/timeline` | Privacy event timeline |
-| GET  | `/api/v1/graph` | Data ownership graph |
-| POST | `/api/v1/ai/chat` | AI assistant chat |
-| POST | `/api/v1/ai/explain/permission/{id}` | Explain permission |
+### Data Layer
 
-## Privacy Score Algorithm
+* PostgreSQL
+* Neo4j
+* Redis
+* Elasticsearch
 
-Score 0–100 (higher = more private):
+### Infrastructure
 
-| Factor | Weight | Calculation |
-|--------|--------|-------------|
-| Permission Risk | 35% | CRITICAL=15, HIGH=8, MEDIUM=3, LOW=1 pts each |
-| Breach Exposure | 25% | Unresolved breaches × 12 pts |
-| Third-Party Sharing | 20% | OAuth scope breadth |
-| Account Sprawl | 12% | >3 accounts penalised |
-| Data Staleness | 8% | Accounts not synced in 30+ days |
+* Docker
+* Docker Compose
+* GitHub Actions CI/CD
 
-Risk levels: 80–100=LOW, 60–79=MEDIUM, 40–59=HIGH, 0–39=CRITICAL
 
-## Environment Variables
+---
 
-```env
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-ANTHROPIC_API_KEY=your-anthropic-api-key
-HIBP_API_KEY=your-hibp-api-key
-JWT_SECRET=change-in-production-min-32-chars
-```
+## 🔒 Privacy First
+
+PrivacyOS is designed around privacy-by-design principles:
+
+* Transparent permission visibility
+* User-controlled data ownership
+* Minimal data retention
+* Explainable privacy insights
+* Secure authentication and authorization
+* Full auditability
+
+---
+
+## 🎯 Vision
+
+PrivacyOS aims to become the operating system for personal privacy—giving individuals complete visibility, understanding, and control over how their data is accessed, shared, and exposed across the digital world.
+
+---
+
+### Built for a more transparent internet. 🛡️
