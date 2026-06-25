@@ -186,7 +186,13 @@ PrivacyOS is designed around privacy-by-design principles:
 * Full auditability
 
 ---
+##Summary
 
+PrivacyOS is a full-stack Personal Data Ownership and Privacy Intelligence Platform designed to give users complete visibility and control over their digital footprint across the internet. It aggregates OAuth-connected accounts from providers like Google, GitHub, and LinkedIn, analyzes every granted permission for risk exposure, monitors data breach appearances, and calculates a real-time privacy score using a weighted algorithm across five risk dimensions. An AI assistant powered by Claude explains permissions in plain English and delivers personalized recommendations. An interactive graph visualizes the full User → Account → Permission → Data Category ownership chain, while a tamper-proof timeline logs every privacy event for audit purposes.
+Tech Stack: Java 21, Spring Boot, Spring Security, JWT, Flutter, PostgreSQL, Neo4j, Redis, Elasticsearch
+
+
+---
 ## 🎯 Vision
 
 PrivacyOS aims to become the operating system for personal privacy—giving individuals complete visibility, understanding, and control over how their data is accessed, shared, and exposed across the digital world.
