@@ -1,5 +1,5 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../api/auth_api.dart';
 import '../api/api_client.dart';
 import '../models/user.dart';
@@ -9,67 +9,91 @@ class AuthState {
   final bool isAuthenticated;
   final bool isLoading;
   final String? error;
-  const AuthState({this.user,this.isAuthenticated=false,this.isLoading=false,this.error});
-  AuthState copyWith({User? user,bool? isAuthenticated,bool? isLoading,String? error}) =>
-    AuthState(user:user??this.user,isAuthenticated:isAuthenticated??this.isAuthenticated,isLoading:isLoading??this.isLoading,error:error);
+
+  const AuthState({
+    this.user,
+    this.isAuthenticated = false,
+    this.isLoading = false,
+    this.error,
+  });
+
+  AuthState copyWith({
+    User? user,
+    bool? isAuthenticated,
+    bool? isLoading,
+    String? error,
+  }) =>
+      AuthState(
+        user: user ?? this.user,
+        isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+        isLoading: isLoading ?? this.isLoading,
+        error: error,
+      );
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthApi _api = AuthApi();
   final ApiClient _client = ApiClient();
-  AuthNotifier() : super(const AuthState()) { _tryAutoLogin(); }
+
+  AuthNotifier() : super(const AuthState());
 
   Future<void> _tryAutoLogin() async {
-    final token = await _client.getAccessToken();
-    if (token == null) return;
-    try {
-      final data = await _api.me();
-      state = AuthState(user: User.fromJson(data), isAuthenticated: true);
-    } catch (_) { await _client.clearTokens(); }
+    // Frontend demo mode.
+    // No backend authentication required.
+    state = AuthState(
+      user: _demoUser,
+      isAuthenticated: true,
+    );
   }
 
   Future<String?> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    try {
-      final data = await _api.login(email, password);
-      final r = AuthResponse.fromJson(data);
-      await _client.setTokens(r.accessToken, r.refreshToken);
-      state = AuthState(user: r.user, isAuthenticated: true);
+
+    // Demo login
+    if (email.trim() == 'demo@privacyos.io' &&
+        password == 'Demo@1234') {
+      state = AuthState(
+        user: _demoUser,
+        isAuthenticated: true,
+      );
+
       return null;
-    } catch (e) {
-      final msg = _errorMsg(e);
-      state = AuthState(error: msg);
-      return msg;
     }
+
+    state = const AuthState(
+      error: 'For the live demo, use demo@privacyos.io / Demo@1234',
+    );
+
+    return 'For the live demo, use demo@privacyos.io / Demo@1234';
   }
 
-  Future<String?> register(String email, String password, String fullName) async {
-    state = state.copyWith(isLoading: true, error: null);
-    try {
-      final data = await _api.register(email, password, fullName);
-      final r = AuthResponse.fromJson(data);
-      await _client.setTokens(r.accessToken, r.refreshToken);
-      state = AuthState(user: r.user, isAuthenticated: true);
-      return null;
-    } catch (e) {
-      final msg = _errorMsg(e);
-      state = AuthState(error: msg);
-      return msg;
-    }
+  Future<String?> register(
+      String email,
+      String password,
+      String fullName,
+      ) async {
+    return 'Registration is disabled in demo mode.';
   }
 
   Future<void> logout() async {
-    await _api.logout();
-    await _client.clearTokens();
     state = const AuthState();
   }
 
-  String _errorMsg(dynamic e) {
-    try {
-      final data = (e as dynamic).response?.data;
-      return data['message'] ?? 'An error occurred';
-    } catch (_) { return 'An error occurred'; }
-  }
+  static const User _demoUser = User(
+    id: 'demo-user',
+    email: 'demo@privacyos.io',
+    fullName: 'Demo User',
+    riskLevel: 'MEDIUM',
+    provider: 'LOCAL',
+    role: 'USER',
+    avatarUrl: null,
+    emailVerified: true,
+    privacyScore: 72,
+    createdAt: '2026-01-01T00:00:00Z',
+  );
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) => AuthNotifier());
+final authProvider =
+    StateNotifierProvider<AuthNotifier, AuthState>(
+  (ref) => AuthNotifier(),
+);
